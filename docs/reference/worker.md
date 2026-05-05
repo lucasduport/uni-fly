@@ -10,10 +10,6 @@ Generated from docstrings in `packages/worker/src/unifly_worker/`.
 
 ::: unifly_worker.config
 
-## Logging
-
-::: unifly_worker.logging
-
 ## Workflows
 
 ::: unifly_worker.workflows.hello

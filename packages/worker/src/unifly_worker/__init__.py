@@ -1,5 +1,7 @@
-"""Temporal worker for the Firefly III companion."""
+"""Mistral Workflows worker for the Firefly III companion."""
 
-from unifly_worker._version import __version__
+from importlib.metadata import version
+
+__version__ = version("unifly-worker")
 
 __all__ = ["__version__"]

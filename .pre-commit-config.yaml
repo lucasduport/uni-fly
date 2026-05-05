@@ -33,7 +33,6 @@ repos:
           - pydantic>=2.7
           - pydantic-settings>=2.3
           - mistralai-workflows[mistralai]
-          - structlog>=24.1
           - httpx>=0.27
 
   - repo: https://github.com/gitleaks/gitleaks
@@ -45,3 +44,16 @@ repos:
     rev: 0.11.10
     hooks:
       - id: uv-lock
+
+  # Local hook: run the test suite. Stage = pre-push so commits stay fast;
+  # tests run once before the changes hit origin (and CI). Install with:
+  #   uv run pre-commit install --hook-type pre-push
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

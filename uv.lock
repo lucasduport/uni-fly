@@ -1934,7 +1934,6 @@ dependencies = [
     { name = "mistralai-workflows", extra = ["mistralai"] },
     { name = "pydantic" },
     { name = "pydantic-settings" },
-    { name = "structlog" },
 ]
 
 [package.metadata]
@@ -1943,7 +1942,6 @@ requires-dist = [
     { name = "mistralai-workflows", extras = ["mistralai"] },
     { name = "pydantic", specifier = ">=2.7" },
     { name = "pydantic-settings", specifier = ">=2.3" },
-    { name = "structlog", specifier = ">=24.1" },
 ]
 
 [[package]]
