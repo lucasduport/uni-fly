@@ -10,12 +10,15 @@ set -euo pipefail
 
 REPO="${REPO:-lucasduport/uni-fly}"
 
-# Names must exactly match the `name:` field on each CI job.
-REQUIRED_CHECKS_MAIN='["Lint (ruff)","Type check (mypy)","Test (pytest)","pre-commit","Build site"]'
-REQUIRED_CHECKS_DEV='["Lint (ruff)","Type check (mypy)","Test (pytest)","pre-commit","Build site"]'
+# Names must exactly match the check names that GitHub actually reports.
+# For matrix jobs, GitHub appends the matrix combination to the job name,
+# so `Test (pytest)` with `python-version: ["3.12","3.13"]` reports as
+# `Test (pytest) (3.12)` and `Test (pytest) (3.13)`. List both.
+REQUIRED_CHECKS_MAIN='["Type check (mypy)","Test (pytest) (3.12)","Test (pytest) (3.13)","pre-commit","Build site"]'
+REQUIRED_CHECKS_DEV='["Type check (mypy)","Test (pytest) (3.12)","Test (pytest) (3.13)","pre-commit","Build site"]'
 
 protect() {
-  local branch="$1" required_checks="$2" required_reviews="$3"
+  local branch="$1" required_checks="$2" required_reviews="$3" code_owner="$4"
 
   echo "→ Protecting ${branch} on ${REPO}"
 
@@ -23,6 +26,7 @@ protect() {
   jq -n \
     --argjson contexts "${required_checks}" \
     --argjson reviews "${required_reviews}" \
+    --argjson codeOwner "${code_owner}" \
     '{
       required_status_checks: {
         strict: true,
@@ -32,7 +36,7 @@ protect() {
       required_pull_request_reviews: (
         if $reviews > 0 then {
           dismiss_stale_reviews: true,
-          require_code_owner_reviews: true,
+          require_code_owner_reviews: $codeOwner,
           required_approving_review_count: $reviews
         } else null end
       ),
@@ -51,8 +55,10 @@ protect() {
   echo "  ✓ ${branch} protected"
 }
 
-protect "main" "${REQUIRED_CHECKS_MAIN}" 1
-protect "dev"  "${REQUIRED_CHECKS_DEV}"  0
+# main: 1 code-owner review required (admin-merge for solo releases)
+protect "main" "${REQUIRED_CHECKS_MAIN}" 1 true
+# dev: PR + green CI only — solo self-merge after CI passes
+protect "dev"  "${REQUIRED_CHECKS_DEV}"  0 false
 
 echo
 echo "Done. Set the default branch to 'dev' if not already:"

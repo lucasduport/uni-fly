@@ -1921,7 +1921,7 @@ dev = [
 docs = [
     { name = "mkdocs", specifier = ">=1.6" },
     { name = "mkdocs-material", specifier = ">=9.5" },
-    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.26" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.4" },
     { name = "pymdown-extensions", specifier = ">=10.9" },
 ]
 
@@ -1934,7 +1934,6 @@ dependencies = [
     { name = "mistralai-workflows", extra = ["mistralai"] },
     { name = "pydantic" },
     { name = "pydantic-settings" },
-    { name = "structlog" },
 ]
 
 [package.metadata]
@@ -1943,7 +1942,6 @@ requires-dist = [
     { name = "mistralai-workflows", extras = ["mistralai"] },
     { name = "pydantic", specifier = ">=2.7" },
     { name = "pydantic-settings", specifier = ">=2.3" },
-    { name = "structlog", specifier = ">=24.1" },
 ]
 
 [[package]]

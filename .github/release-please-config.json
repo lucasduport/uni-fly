@@ -12,10 +12,6 @@
       "package-name": "uni-fly",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        {
-          "type": "generic",
-          "path": "packages/worker/src/unifly_worker/_version.py"
-        },
         "packages/worker/pyproject.toml",
         "pyproject.toml"
       ]

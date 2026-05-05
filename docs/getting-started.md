@@ -11,7 +11,8 @@
 git clone https://github.com/lucasduport/uni-fly.git
 cd uni-fly
 uv sync --all-packages --all-groups --frozen
-uv run pre-commit install
+uv run pre-commit install                        # commit-stage hooks
+uv run pre-commit install --hook-type pre-push   # push-stage hook (runs pytest)
 cp .env.example .env
 ```
 
