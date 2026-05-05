@@ -1,0 +1,134 @@
+[project]
+name = "uni-fly"
+version = "0.1.0"
+description = "Firefly III companion — Temporal worker monorepo"
+readme = "README.md"
+requires-python = ">=3.12,<3.15"
+license = { text = "MIT" }
+authors = [{ name = "Lucas Duport", email = "lucasdup@icloud.com" }]
+
+# Root project is a meta-package; real code lives in packages/*.
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "pre-commit>=3.7",
+]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.26",
+    "pymdown-extensions>=10.9",
+]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+unifly-worker = { workspace = true }
+
+# Security: refuse to resolve packages published in the last 7 days.
+# Mitigates supply-chain attacks where a malicious version was just pushed
+# (typosquats, compromised maintainer accounts, etc.). Run `make bump-cutoff`
+# to roll the date forward to (today - 7 days) before re-locking.
+[tool.uv]
+exclude-newer = "2026-04-28T00:00:00Z"
+
+# ---------------------------------------------------------------------------
+# Ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["packages/worker/src", "packages/worker/tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+    "N",    # pep8-naming
+    "SIM",  # flake8-simplify
+    "RUF",  # ruff-specific
+    "ASYNC",# flake8-async
+    "S",    # flake8-bandit
+    "PTH",  # flake8-use-pathlib
+    "TID",  # flake8-tidy-imports
+    "PL",   # pylint
+]
+ignore = [
+    "PLR0913", # too many arguments
+    "PLR2004", # magic value comparison
+    "S101",    # assert (fine in tests)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S", "PLR"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# ---------------------------------------------------------------------------
+# Mypy
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_untyped_decorators = true
+no_implicit_reexport = true
+plugins = []
+mypy_path = ["packages/worker/src"]
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["packages/worker/tests"]
+asyncio_mode = "auto"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=unifly_worker",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["unifly_worker"]
+omit = [
+    # Bootstrap modules covered by integration / manual smoke tests.
+    "*/unifly_worker/__main__.py",
+    "*/unifly_worker/worker.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+# Floor for the skeleton; raise toward 80 as workflows/activities land.
+fail_under = 60
+show_missing = true
