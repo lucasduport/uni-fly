@@ -2,9 +2,9 @@ name: Docs
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
-    branches: [main]
+    branches: [main, dev]
   workflow_dispatch:
 
 permissions:
@@ -43,14 +43,14 @@ jobs:
         run: uv run mkdocs build --strict --site-dir _site
 
       - name: Upload Pages artifact
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'  # only main publishes to Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
   deploy:
     name: Deploy to GitHub Pages
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'  # only main publishes to Pages
     needs: build
     runs-on: ubuntu-latest
     environment:
