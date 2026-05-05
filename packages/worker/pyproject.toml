@@ -1,8 +1,7 @@
 [project]
 name = "unifly-worker"
 version = "0.1.0"
-description = "Temporal worker that syncs bank transactions to Firefly III via Mistral classification"
-readme = "README.md"
+description = "Mistral Workflows worker that syncs bank transactions to Firefly III via Mistral classification"
 requires-python = ">=3.12,<3.15"
 license = { text = "MIT" }
 authors = [{ name = "Lucas Duport", email = "lucasdup@icloud.com" }]
