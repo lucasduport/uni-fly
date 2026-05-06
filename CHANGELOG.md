@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/lucasduport/uni-fly/compare/v0.1.1...v0.1.2) (2026-05-06)
+
+
+### Documentation
+
+* add MkDocs Material site with GitHub Pages workflow ([9ae0aab](https://github.com/lucasduport/uni-fly/commit/9ae0aab27aed7504e2b03d5327e7253efa2fb4ff))
+
 ## [0.1.1](https://github.com/lucasduport/uni-fly/compare/v0.1.0...v0.1.1) (2026-05-05)
 
 
