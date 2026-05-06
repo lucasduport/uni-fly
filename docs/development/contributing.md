@@ -7,7 +7,7 @@ Two long-lived branches:
 | Branch | Role                                            | Protection                              |
 | ------ | ----------------------------------------------- | --------------------------------------- |
 | `dev`  | Integration branch — every feature lands here   | PR + green CI required, no direct push  |
-| `main` | Release branch — drives version tags + Pages    | PR + green CI + 1 review, no direct push|
+| `main` | Release branch — drives version tags + Pages    | PR + green CI + 1 review, no direct push (default branch) |
 
 ```
 feature/* ─PR→ dev ─(CI)─ merged
