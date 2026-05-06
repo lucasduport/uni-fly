@@ -31,10 +31,15 @@ repos:
     hooks:
       - id: gitleaks
 
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.10
+  # Local hook: check uv.lock is consistent
+  - repo: local
     hooks:
       - id: uv-lock
+        name: uv-lock
+        entry: uv lock --check
+        language: system
+        pass_filenames: false
+        files: ^uv\.lock$
 
   # Local hook: run the test suite. Stage = pre-push so commits stay fast;
   # tests run once before the changes hit origin (and CI). Install with:
