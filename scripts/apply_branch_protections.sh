@@ -54,8 +54,8 @@ protect() {
   echo "  ✓ ${branch} protected"
 }
 
-# main: 1 code-owner review required (admin-merge for solo releases)
-protect "main" "${REQUIRED_CHECKS_MAIN}" 1 true
+# main: no review required (solo project, admin-merge for releases)
+protect "main" "${REQUIRED_CHECKS_MAIN}" 0 false
 
 echo
 echo "Done."
