@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/lucasduport/uni-fly/compare/v0.1.2...v0.1.3) (2026-05-08)
+
+
+### Bug Fixes
+
+* **ci:** simplify to main-only release flow with lockfile regeneration ([#12](https://github.com/lucasduport/uni-fly/issues/12)) ([56c3052](https://github.com/lucasduport/uni-fly/commit/56c30526438bb4815cb0d61730c8aa9da9dcb8d9))
+
 ## [0.1.2](https://github.com/lucasduport/uni-fly/compare/v0.1.1...v0.1.2) (2026-05-06)
 
 
