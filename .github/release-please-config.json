@@ -7,6 +7,7 @@
   "bump-patch-for-minor-pre-major": true,
   "draft": false,
   "prerelease": false,
+  "pull-request-header": "⚠️ **Manual step required before merging:** check out this branch, run `uv lock`, and push the updated `uv.lock`. This also triggers CI (workflows do not run on PRs opened by `GITHUB_TOKEN`).",
   "packages": {
     ".": {
       "package-name": "uni-fly",
