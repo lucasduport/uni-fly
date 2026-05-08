@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/lucasduport/uni-fly/compare/v0.1.3...v0.1.4) (2026-05-08)
+
+
+### Bug Fixes
+
+* **ci:** update lockfile on release PR branch ([#14](https://github.com/lucasduport/uni-fly/issues/14)) ([71d2d11](https://github.com/lucasduport/uni-fly/commit/71d2d115f1bcb700007c4aa9b5e2bf762a1bcc88))
+
 ## [0.1.3](https://github.com/lucasduport/uni-fly/compare/v0.1.2...v0.1.3) (2026-05-08)
 
 
