@@ -1,10 +1,8 @@
 name: CI
 
 on:
-  push:
-    branches: [main, dev]
   pull_request:
-    branches: [main, dev]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,8 +13,8 @@ env:
   UV_VERSION: "0.11.2"
 
 jobs:
-  # `lint` deliberately omitted: the `pre-commit` job runs `ruff check`
-  # and `ruff format --check` via the same hooks developers run locally.
+  # `lint` deliberately omitted: the `ruff` job runs `ruff check`
+  # and `ruff format --check` explicitly.
   typecheck:
     name: Type check (mypy)
     runs-on: ubuntu-latest
@@ -54,17 +52,40 @@ jobs:
           name: coverage-xml
           path: coverage.xml
 
-  pre-commit:
-    name: pre-commit
+  ruff:
+    name: Ruff (lint + format)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
       - uses: astral-sh/setup-uv@v7
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
       - run: uv python install ${{ env.PYTHON_VERSION }}
       - run: uv sync --all-packages --all-groups --frozen
-      - uses: pre-commit/action@v3.0.1
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+
+  gitleaks:
+    name: Gitleaks (secrets scan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  uv-lock:
+    name: uv.lock check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+      - run: uv python install ${{ env.PYTHON_VERSION }}
+      - run: uv sync --all-packages --all-groups --frozen
+      - run: uv lock --check

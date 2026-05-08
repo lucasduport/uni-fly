@@ -74,7 +74,7 @@ above when you're ready to pull in newer deps.
 ## CI
 
 GitHub Actions runs type check, tests, and pre-commit (which itself includes ruff
-check + format) on every push and PR — see
+check + format) on every PR to `main` — see
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## License

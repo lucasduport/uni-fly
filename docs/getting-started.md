@@ -36,4 +36,4 @@ uv run mypy packages/worker/src
 uv run pytest
 ```
 
-These are the same commands CI runs on every push and pull request.
+These are the same commands CI runs on every pull request to `main`.
