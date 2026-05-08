@@ -14,7 +14,7 @@ REPO="${REPO:-lucasduport/uni-fly}"
 # For matrix jobs, GitHub appends the matrix combination to the job name,
 # so `Test (pytest)` with `python-version: ["3.12","3.13"]` reports as
 # `Test (pytest) (3.12)` and `Test (pytest) (3.13)`. List both.
-REQUIRED_CHECKS_MAIN='["Type check (mypy)","Test (pytest) (3.12)","Test (pytest) (3.13)","pre-commit","Build site"]'
+REQUIRED_CHECKS_MAIN='["Type check (mypy)","Test (pytest) (3.12)","Test (pytest) (3.13)","Ruff (lint + format)","Gitleaks (secrets scan)","uv.lock check","Build site"]'
 
 protect() {
   local branch="$1" required_checks="$2" required_reviews="$3" code_owner="$4"
