@@ -112,6 +112,10 @@ addopts = [
     "--cov=unifly_worker",
     "--cov-report=term-missing",
     "--cov-report=xml",
+    # Integration tests need a live Postgres + Firefly stack and DATABASE_URL.
+    # Run them explicitly with `make test-integration` (or `pytest -m integration`).
+    "-m",
+    "not integration",
 ]
 filterwarnings = ["error"]
 markers = [
