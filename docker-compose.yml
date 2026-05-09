@@ -1,0 +1,128 @@
+# Local development stack for uni-fly.
+#
+# Quick start:
+#   cp .env.example .env       # fill FIREFLY_APP_KEY (openssl rand -base64 32)
+#   docker compose up -d       # brings up Firefly + DBs, applies migrations,
+#                              # then starts the worker
+#
+# The Mistral Workflows runtime itself is NOT included — point the worker at
+# the runtime URL of your choice via the standard Mistral Workflows env vars.
+#
+# Passwords MUST be set in the environment (or .env). The compose stack will
+# refuse to start otherwise — this prevents accidentally deploying with a known
+# default password. See .env.example for the suggested dev values.
+
+x-companion-db-env: &companion-db-env
+  POSTGRES_DB: companion
+  POSTGRES_USER: companion
+  POSTGRES_PASSWORD: ${COMPANION_DB_PASSWORD:?COMPANION_DB_PASSWORD must be set (see .env.example)}
+
+x-firefly-db-env: &firefly-db-env
+  POSTGRES_DB: firefly
+  POSTGRES_USER: firefly
+  POSTGRES_PASSWORD: ${FIREFLY_DB_PASSWORD:?FIREFLY_DB_PASSWORD must be set (see .env.example)}
+
+services:
+  firefly:
+    image: fireflyiii/core:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      APP_KEY: ${FIREFLY_APP_KEY}
+      DB_CONNECTION: pgsql
+      DB_HOST: firefly-db
+      DB_PORT: 5432
+      DB_DATABASE: firefly
+      DB_USERNAME: firefly
+      DB_PASSWORD: ${FIREFLY_DB_PASSWORD:?FIREFLY_DB_PASSWORD must be set (see .env.example)}
+      SITE_OWNER: dev@example.com
+      DEFAULT_LANGUAGE: en_US
+      TZ: Etc/UTC
+    depends_on:
+      firefly-db:
+        condition: service_healthy
+    volumes:
+      - firefly-upload:/var/www/html/storage/upload
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  firefly-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      <<: *firefly-db-env
+    volumes:
+      - firefly-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U firefly -d firefly"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  companion-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      # Bind to loopback only so a misconfigured host firewall can't expose
+      # the dev DB to the world.
+      - "127.0.0.1:5432:5432"
+    environment:
+      <<: *companion-db-env
+    volumes:
+      - companion-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U companion -d companion"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Migrations run as a one-shot sidecar that the worker depends on. A fresh
+  # `up -d` therefore always lands the worker on a migrated schema.
+  alembic:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: []
+    command: ["alembic", "upgrade", "head"]
+    environment:
+      DATABASE_URL: postgresql+asyncpg://companion:${COMPANION_DB_PASSWORD:?COMPANION_DB_PASSWORD must be set (see .env.example)}@companion-db:5432/companion
+    depends_on:
+      companion-db:
+        condition: service_healthy
+    restart: "no"
+
+  companion-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+asyncpg://companion:${COMPANION_DB_PASSWORD:?COMPANION_DB_PASSWORD must be set (see .env.example)}@companion-db:5432/companion
+      FIREFLY_URL: http://firefly:8080
+      FIREFLY_TOKEN: ${FIREFLY_TOKEN:-}
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:-}
+      MISTRAL_MODEL: ${MISTRAL_MODEL:-mistral-medium-3-5}
+      DEPLOYMENT_NAME: ${DEPLOYMENT_NAME:-unifly-worker}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # Mistral Workflows payload encryption — must be set so the SDK can
+      # decrypt EncryptedStrField payloads. The :? guard fails fast if missing.
+      TEMPORAL_PAYLOAD_ENCRYPTION__MODE: ${TEMPORAL_PAYLOAD_ENCRYPTION__MODE:?TEMPORAL_PAYLOAD_ENCRYPTION__MODE must be set (partial|full|disabled)}
+      TEMPORAL_PAYLOAD_ENCRYPTION__MAIN_KEY: ${TEMPORAL_PAYLOAD_ENCRYPTION__MAIN_KEY:?TEMPORAL_PAYLOAD_ENCRYPTION__MAIN_KEY must be set (256-bit hex key)}
+      # SECONDARY_KEY is intentionally not listed here: empty string is materially
+      # different from unset (the SDK uses absence to disable the rotation
+      # fallback). Set it in your shell/.env only when actively rotating —
+      # compose will pass it through to the container automatically.
+    depends_on:
+      companion-db:
+        condition: service_healthy
+      alembic:
+        condition: service_completed_successfully
+
+volumes:
+  firefly-pgdata:
+  firefly-upload:
+  companion-pgdata:
