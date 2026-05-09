@@ -46,12 +46,13 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
-    # Document the encryption contract on the schema itself so Phase 5 can't
-    # silently pick an incompatible format.
+    # Treat the column as an opaque encrypted blob at this layer; the exact
+    # format and key-sourcing strategy are owned by Phase 5 and documented in
+    # the Phase-5 design doc. A follow-up migration should rewrite this COMMENT
+    # once the format is finalised.
     op.execute(
         "COMMENT ON COLUMN bank_accounts.credentials_enc IS "
-        "'Encrypted woob backend config. Format: AES-256-GCM via cryptography.Fernet "
-        "(key sourced from ENCRYPTION_KEY env var). Decrypt with unifly_worker.security.crypto.'"
+        "'Encrypted opaque blob; format and key sourcing defined by Phase-5 design.'"
     )
 
     op.create_table(
@@ -78,6 +79,8 @@ def upgrade() -> None:
             nullable=False,
         ),
     )
+    # Index name matches Base.NAMING_CONVENTION ("ix_%(column_0_label)s") so a
+    # future `alembic revision --autogenerate` does not see a phantom diff.
     op.create_index("ix_sync_log_bank_account_id", "sync_log", ["bank_account_id"])
 
     op.create_table(
