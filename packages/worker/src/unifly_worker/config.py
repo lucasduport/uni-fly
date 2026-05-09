@@ -28,12 +28,21 @@ def _is_private_host(host: str) -> bool:
     names, intranet short names), or an IP address inside the loopback,
     private (RFC1918), or link-local ranges. FQDNs with no resolvable IP
     information are treated as public — be conservative when unsure.
+
+    Bare hostnames are accepted but a WARNING is logged so an FQDN typo
+    (e.g. ``firefyl`` instead of ``firefly.example.com``) does not silently
+    bypass the HTTPS check.
     """
     if host in _LOOPBACK_HOSTNAMES:
         return True
     # Bare hostname with no dots and no colons -> Docker service name or
     # intranet short name. Cannot be a public DNS name.
     if "." not in host and ":" not in host:
+        logger.warning(
+            "firefly_url uses bare hostname %r; treating as private (Docker/"
+            "intranet). Verify this is not a typo of an external FQDN.",
+            host,
+        )
         return True
     try:
         addr = ipaddress.ip_address(host)
