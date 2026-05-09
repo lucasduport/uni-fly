@@ -88,9 +88,7 @@ async def test_migration_applies_against_postgres() -> None:
     engine = create_async_engine(os.environ["DATABASE_URL"])
     try:
         async with engine.connect() as conn:
-            tables: set[str] = await conn.run_sync(
-                lambda c: set(inspect(c).get_table_names())
-            )
+            tables: set[str] = await conn.run_sync(lambda c: set(inspect(c).get_table_names()))
             await conn.execute(text("SELECT 1"))
     finally:
         await engine.dispose()
