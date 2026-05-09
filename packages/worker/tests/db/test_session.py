@@ -58,7 +58,14 @@ async def test_session_scope_rolls_back_on_exception() -> None:
 
 
 def test_session_module_has_no_lru_cache() -> None:
-    """Regression guard: session.py must not reintroduce module-level caches."""
+    """Regression guard: session.py must not reintroduce module-level caches.
+
+    Limitation: only catches ``functools.lru_cache`` (and the unparameterised
+    ``functools.cache``) by probing the ``cache_info`` attribute. It does NOT
+    catch a module-level ``engine = create_engine(...)`` style singleton —
+    that pattern should be rejected at code-review time. Extend this test if
+    you find a sharper check.
+    """
     public_callables = {
         name
         for name in dir(session_module)
@@ -66,7 +73,7 @@ def test_session_module_has_no_lru_cache() -> None:
     }
     for name in public_callables:
         attr = getattr(session_module, name)
-        # functools.lru_cache wrappers expose a `cache_info` attribute.
+        # functools.lru_cache / functools.cache wrappers expose `cache_info`.
         assert not hasattr(attr, "cache_info"), (
             f"{name} appears to be lru_cache-wrapped; module-level caches were "
             "removed deliberately so callers can manage engine lifecycle"
