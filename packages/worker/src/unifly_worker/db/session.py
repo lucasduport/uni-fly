@@ -36,7 +36,7 @@ def create_engine(database_url: str, **engine_kwargs: object) -> AsyncEngine:
         database_url: SQLAlchemy URL (e.g. ``postgresql+asyncpg://...``).
         engine_kwargs: Forwarded verbatim to :func:`create_async_engine`.
     """
-    logger.debug("Creating async engine for database_url host=%s", _safe_host(database_url))
+    logger.debug("Creating async engine for database_url host=%s", safe_host(database_url))
     return create_async_engine(database_url, **engine_kwargs)
 
 
@@ -69,7 +69,7 @@ async def session_scope(
         await session.close()
 
 
-def _safe_host(url: str) -> str:
+def safe_host(url: str) -> str:
     """Return ``host:port/db`` from a SQLAlchemy URL with credentials stripped.
 
     Used purely for log lines so we never accidentally leak the password

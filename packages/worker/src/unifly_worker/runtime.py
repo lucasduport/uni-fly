@@ -19,7 +19,7 @@ from typing import Self
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from unifly_worker.config import Settings
-from unifly_worker.db.session import create_engine, make_sessionmaker
+from unifly_worker.db.session import create_engine, make_sessionmaker, safe_host
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class WorkerRuntime:
         """Build a runtime from :class:`Settings` and engine sizing knobs."""
         logger.info(
             "Initialising worker runtime db_host=%s pool_size=%d max_overflow=%d",
-            _db_host(settings.database_url),
+            safe_host(settings.database_url),
             pool_size,
             max_overflow,
         )
@@ -84,7 +84,3 @@ class WorkerRuntime:
         tb: TracebackType | None,
     ) -> None:
         await self.aclose()
-
-
-def _db_host(url: str) -> str:
-    return url.rsplit("@", 1)[-1]
