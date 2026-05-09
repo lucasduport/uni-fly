@@ -12,5 +12,5 @@ def test_package_exposes_version() -> None:
 
 
 def test_settings_defaults_are_sane(settings: Settings) -> None:
-    assert settings.workflow_task_queue == "test-queue"
     assert settings.firefly_url.startswith("http")
+    assert settings.firefly_token == "test-token"
