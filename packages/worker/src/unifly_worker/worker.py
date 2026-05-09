@@ -10,6 +10,7 @@ other infrastructural opinions are wired in.
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from mistralai import workflows
 from mistralai.workflows.core.config.config import config as workflows_config
@@ -22,7 +23,9 @@ from unifly_worker.workflows import HelloWorldWorkflow
 logger = logging.getLogger(__name__)
 
 # All workflows the worker should serve. Add new entries as features land.
-WORKFLOWS: list[type[HelloWorldWorkflow]] = [HelloWorldWorkflow]
+# Typed as ``list[type[Any]]`` so adding a second workflow class doesn't
+# require widening the annotation each time.
+WORKFLOWS: list[type[Any]] = [HelloWorldWorkflow]
 
 
 async def run(settings: Settings | None = None) -> None:
