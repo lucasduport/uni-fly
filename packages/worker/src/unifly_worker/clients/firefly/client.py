@@ -30,7 +30,6 @@ from unifly_worker.clients.firefly.models import (
     Tag,
     TransactionGroupIn,
     TransactionGroupRead,
-    TransactionRead,
 )
 
 logger = logging.getLogger(__name__)
@@ -187,8 +186,7 @@ class FireflyClient:
 # Helpers
 # ---------------------------------------------------------------------------
 
-# Re-export to keep the public type surface stable for callers that flatten.
-__all__ = ["FireflyClient", "TransactionRead"]
+__all__ = ["FireflyClient"]
 
 
 def _drop_none(
