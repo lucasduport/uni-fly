@@ -14,7 +14,6 @@ def settings() -> Iterator[Settings]:
     """Provide a fresh, isolated Settings instance per test."""
     get_settings.cache_clear()
     yield Settings(
-        workflow_task_queue="test-queue",
         firefly_url="http://localhost:8080",
         firefly_token="test-token",
         mistral_api_key="test-key",

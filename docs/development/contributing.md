@@ -21,7 +21,7 @@ feature/* ─PR→ main ─(CI)─ merged → release-please auto-bumps version 
    pre-commit.
 5. Once merged into `main`:
    - If your PR includes conventional commit messages that warrant a version bump
-     (see below), [release-please](https://github.com/googleapis/release-please) 
+     (see below), [release-please](https://github.com/googleapis/release-please)
      automatically opens a **release PR** to `main` with the version bump and changelog.
    - Merge the release PR to publish a GitHub Release with the new version tag.
 

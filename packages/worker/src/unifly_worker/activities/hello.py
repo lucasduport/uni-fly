@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import logging
+
 import pydantic
 from mistralai import workflows
+
+logger = logging.getLogger(__name__)
 
 
 class Greeting(pydantic.BaseModel):
@@ -19,4 +23,5 @@ async def greet(name: str) -> Greeting:
     Trivial by design — the goal is to prove the workflow → activity wiring.
     """
     async with workflows.task("activity.greet", {"name": name}):
+        logger.debug("Greeting name=%s", name)
         return Greeting(message=f"Hello, {name}!")

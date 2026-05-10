@@ -24,6 +24,11 @@ COPY packages/worker/src ./packages/worker/src
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --package unifly-worker
 
+# Alembic config + migrations — needed by the `alembic` compose service which
+# overrides ENTRYPOINT to run `alembic upgrade head` from /app.
+COPY alembic.ini ./
+COPY alembic ./alembic
+
 # ---------- Runtime ----------
 FROM python:3.12-slim AS runtime
 

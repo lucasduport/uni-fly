@@ -89,6 +89,8 @@ nav:
       - Project layout: development/layout.md
   - Reference:
       - Worker: reference/worker.md
+      - Firefly III client: reference/firefly-client.md
+      - Companion DB: reference/db.md
 
 extra:
   social:
