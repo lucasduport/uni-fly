@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/lucasduport/uni-fly/compare/v0.1.4...v0.1.5) (2026-05-10)
+
+
+### Features
+
+* Phase 1 — companion DB, Firefly III client, runtime, and local stack ([#17](https://github.com/lucasduport/uni-fly/issues/17)) ([b8a4c2a](https://github.com/lucasduport/uni-fly/commit/b8a4c2a605dabf53275e367ccf29926383728c00))
+
 ## [0.1.4](https://github.com/lucasduport/uni-fly/compare/v0.1.3...v0.1.4) (2026-05-08)
 
 
